@@ -74,10 +74,10 @@ jobs:
       - name: Update container image in task definition
         id: task-def
         run: |
-          # コンテナイメージを更新
-          jq --arg IMAGE "${{ env.image }}" \
-            '.containerDefinitions[0].image = $IMAGE' \
-            task-definition.json > updated-task-definition.json
+          # 不要なフィールドを削除し、コンテナイメージを更新
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy) | 
+              .containerDefinitions[0].image = "${{ env.image }}"' \
+              task-definition.json > updated-task-definition.json
 
       - name: Register new task definition
         id: register-task-def
