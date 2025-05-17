@@ -1,6 +1,6 @@
 variable "bucket_name" {
   description = "Name of the S3 bucket"
-  default     = "codewithmuh-terraform-state-backend-990"
+  default     = "codewithmuh-terraform-state-backend-990-koakutsu"
 }
 
 variable "dynamodb_table_name" {

@@ -4,16 +4,15 @@ resource "aws_ecs_cluster" "main" {
   name = "ecs-cluster"
 }
 
-data "template_file" "ecs_app" {
-  template = file("./modules/ecs/templates/ecs/ecs_app.json.tpl")
-
-  vars = {
+# template_fileの代わりにlocalsブロックとtemplatefile関数を使用
+locals {
+  ecs_app_json = templatefile("./modules/ecs/templates/ecs/ecs_app.json.tpl", {
     app_image      = var.app_image
     app_port       = var.app_port
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
     aws_region     = var.aws_region
-  }
+  })
 }
 
 resource "aws_ecs_task_definition" "app" {
@@ -23,7 +22,7 @@ resource "aws_ecs_task_definition" "app" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
-  container_definitions    = data.template_file.ecs_app.rendered
+  container_definitions    = local.ecs_app_json  # data.template_file.ecs_app.renderedの代わりにlocalsを使用
 }
 
 resource "aws_ecs_service" "main" {
